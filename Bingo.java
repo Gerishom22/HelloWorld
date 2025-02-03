@@ -28,7 +28,10 @@ public class Bingo {
         Random rand = new Random();
 
         // Create a new Bingo card for the Player
-        BingoCard player = new BingoCard(rand);
+        BingoCard playerCard1 = new BingoCard(rand);
+        BingoCard playerCard2 = new BingoCard(rand);
+        BingoCard playerCard3 = new BingoCard(rand);
+        BingoCard playerCard4 = new BingoCard(rand);
 
         //Main game loop
         while(true){
@@ -38,19 +41,48 @@ public class Bingo {
              System.out.println("Number drawn: " + drawnNumber);
  
             //Mark the drawn number on both player's cards
-            drawNumberAndMark(player, drawnNumber);
+            drawNumberAndMark(playerCard1, playerCard2, playerCard3, playerCard4, drawnNumber);
 
             //Display Both Player's cards
-            System.out.println("Player's Card: ");
-            displayCard(player);
+            System.out.println("Player's Card 1: ");
+            displayCard(playerCard1);
+            System.out.println("Player's Card 2: ");
+            displayCard(playerCard2);
+            System.out.println("Player's Card 3: ");
+            displayCard(playerCard3);
+            System.out.println("Player's Card 4: ");
+            displayCard(playerCard4);
             System.out.println("-----------------------");
 
-               // Check for Bingo
-               if (hasBingo(player)) {
+               // Check for Bingo 1
+               if (hasBingo(playerCard1)) {
                 System.out.println("BINGO! You Win!");
-                break; // Exit the loop when Bingo is achieved
+                break; 
         
                }
+
+              // Check for Bingo 2
+              if (hasBingo(playerCard2)) {
+                System.out.println("BINGO! You Win!");
+                break; 
+        
+               }
+
+               // Check for Bingo 3
+               if (hasBingo(playerCard3)) {
+                System.out.println("BINGO! You Win!");
+                break; 
+        
+               }
+
+               // Check for Bingo 4
+               if (hasBingo(playerCard4)) {
+                System.out.println("BINGO! You Win!");
+                break; 
+        
+               }
+
+
             }
             scan.close();
             }
@@ -63,10 +95,25 @@ public class Bingo {
   
 
      // Marks the drawn number on the player's card
-     private static void drawNumberAndMark(BingoCard player, int num) {
-        for (int i = 0; i < player.num.size(); ++i) {
-            if (player.num.get(i) == num) {
-                player.num.set(i, 0); // Mark number as drawn
+     private static void drawNumberAndMark(BingoCard playerCard1, BingoCard playerCard2, BingoCard playerCard3, BingoCard playerCard4, int num) {
+        for (int i = 0; i < playerCard1.num.size(); ++i) {
+            if (playerCard1.num.get(i) == num) {
+                playerCard1.num.set(i, 0); 
+            }
+        }
+        for (int i = 0; i < playerCard2.num.size(); ++i) {
+            if (playerCard2.num.get(i) == num) {
+                playerCard2.num.set(i, 0); 
+            }
+        }
+        for (int i = 0; i < playerCard3.num.size(); ++i) {
+            if (playerCard3.num.get(i) == num) {
+                playerCard3.num.set(i, 0); 
+            }
+        }
+        for (int i = 0; i < playerCard4.num.size(); ++i) {
+            if (playerCard4.num.get(i) == num) {
+                playerCard4.num.set(i, 0); 
             }
         }
     }
