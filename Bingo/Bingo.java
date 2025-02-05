@@ -83,10 +83,10 @@ public class Bingo {
             System.out.println("Choose 1 to 4 Bingo cards:");
             if (scanner.hasNextInt()) {
                 numCards = scanner.nextInt();
-                scanner.nextLine(); // Consume the newline
+                scanner.nextLine(); 
             } else {
                 System.out.println("Invalid input. Please enter a number between 1 and 4.");
-                scanner.nextLine(); // Clear invalid input
+                scanner.nextLine(); 
             }
         }
 
@@ -112,7 +112,7 @@ public class Bingo {
                 card.display();
                 if (card.hasBingo()) {
                     System.out.println("BINGO on Card " + card.ID + "! You win!");
-                    scanner.close(); // Close the scanner before exiting
+                    scanner.close(); 
                     return;
                 }
             }
