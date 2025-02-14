@@ -70,9 +70,95 @@ class BingoCard {
     }
 }
 
-public class Bingo {
-    public static void main(String[] args) throws IOException {
-        List<BingoCard> cards = loadCards("BingoCards.txt"); // Load bingo cards from file
+class BingoSelection {
+     public static void main(String[] args) throws IOException {
+        Scanner scanner = new Scanner(System.in);
+        String mode;
+
+        while (true) {
+            System.out.println("Choose mode: (manual/automatic)");
+            mode = scanner.nextLine().trim().toLowerCase();
+
+            if (mode.equals("manual") || mode.equals("automatic")) {
+                break; 
+            } else {
+                System.out.println("Invalid input. Please enter 'manual' or 'automatic'.");
+            }
+        }
+
+        if (mode.equals("manual")) {
+            System.out.println("Manual mode selected.");
+            ManBingo.startGame();
+        } else {
+            System.out.println("Automatic mode selected.");
+            AutoBingo.startGame();  
+        }
+
+        scanner.close();
+    }
+}
+
+class BingoHelper {
+    public static List<BingoCard> loadCards(String filename) throws IOException {
+        List<BingoCard> cards = new ArrayList<>();
+        BufferedReader br = new BufferedReader(new FileReader(filename));
+        String line;
+        String ID = "";
+        List<List<Integer>> grid = new ArrayList<>();
+        
+        while ((line = br.readLine()) != null) {
+            line = line.trim(); 
+            if (line.isEmpty()) continue; 
+            if (line.startsWith("Card")) { 
+                if (!grid.isEmpty()) { 
+                    cards.add(new BingoCard(ID, new ArrayList<>(grid)));
+                    grid.clear();
+                }
+                ID = line;
+            } else {
+                List<Integer> row = new ArrayList<>();
+                String[] numbers = line.split(",");
+    
+                for (String num : numbers) {
+                    num = num.trim();
+                    if (!num.isEmpty()) { 
+                        row.add(Integer.parseInt(num));
+                    }
+                }
+    
+                if (!row.isEmpty()) { 
+                    grid.add(row);
+                }
+            }
+        }
+
+        if (!grid.isEmpty()) { 
+            cards.add(new BingoCard(ID, grid));
+        }
+    
+        br.close();
+        return cards;
+    }
+    
+    public static String generateCall(Random rand, Set<String> calledNumbers) {
+        String[] letters = {"B", "I", "N", "G", "O"};
+        int col, num;
+        String call;
+        
+        do {
+            col = rand.nextInt(5);
+            num = rand.nextInt(15) + 1 + (col * 15);
+            call = letters[col] + num;
+        } while (calledNumbers.contains(call));
+
+        calledNumbers.add(call);
+        return call;
+    }
+}
+
+class AutoBingo {
+    public static void startGame() throws IOException {
+        List<BingoCard> cards = BingoHelper.loadCards("BingoCards.txt");
         Scanner scanner = new Scanner(System.in);
         Random rand = new Random();
         
@@ -81,14 +167,13 @@ public class Bingo {
             System.out.println("Choose 1 to 4 Bingo cards:");
             if (scanner.hasNextInt()) {
                 numCards = scanner.nextInt();
-                scanner.nextLine(); 
+                scanner.nextLine();
             } else {
                 System.out.println("Invalid input. Please enter a number between 1 and 4.");
-                scanner.nextLine(); 
+                scanner.nextLine();
             }
         }
 
-        // Select and shuffle Bingo cards
         List<BingoCard> playerCards = new ArrayList<>();
         Collections.shuffle(cards);
         for (int i = 0; i < numCards; i++) {
@@ -100,82 +185,90 @@ public class Bingo {
             card.display();
         }
         
-        // Start drawing numbers
-        Set<String> calledNumbers = new HashSet<>(); // Keep track of called numbers to avoid duplicates
+        System.out.println("Starting Automatic Bingo Game...");
+        Set<String> calledNumbers = new HashSet<>();
+        
         while (true) {
-            String call = generateCall(rand, calledNumbers);
+            String call = BingoHelper.generateCall(rand, calledNumbers);
             System.out.println("Number drawn: " + call);
-            int calledNumber = Integer.parseInt(call.substring(1)); // Extract the number part from the call
+            int calledNumber = Integer.parseInt(call.substring(1));
             
             for (BingoCard card : playerCards) {
                 card.markNumber(calledNumber);
                 card.display();
-                if (card.hasBingo()) { // Check if a card has Bingo
-                    System.out.println("BINGO on Card " + card.ID + "! You win!");
-                    scanner.close(); 
+                if (card.hasBingo()) {
+                    System.out.println("BINGO on " + card.ID + "! You win!");
+                    scanner.close();
                     return;
                 }
             }
         }
     }
-    
-    private static List<BingoCard> loadCards(String filename) throws IOException {
-        List<BingoCard> cards = new ArrayList<>();
-        BufferedReader br = new BufferedReader(new FileReader(filename));
-        String line;
-        String ID = "";
-        List<List<Integer>> grid = new ArrayList<>();
+}
+
+class ManBingo {
+    public static void startGame() throws IOException {
+        List<BingoCard> cards = BingoHelper.loadCards("BingoCards.txt");
+        Scanner scanner = new Scanner(System.in);
         
-        while ((line = br.readLine()) != null) {
-            line = line.trim(); // Remove leading/trailing spaces
-            if (line.isEmpty()) continue; // Skip empty lines
-    
-            if (line.startsWith("Card")) { // Detect card header
-                if (!grid.isEmpty()) { // Save previous card if grid is not empty
-                    cards.add(new BingoCard(ID, new ArrayList<>(grid)));
-                    grid.clear();
-                }
-                ID = line; // Store card ID
+        int numCards = 0;
+        while (numCards < 1 || numCards > 4) {
+            System.out.println("Choose 1 to 4 Bingo cards:");
+            if (scanner.hasNextInt()) {
+                numCards = scanner.nextInt();
+                scanner.nextLine();
             } else {
-                List<Integer> row = new ArrayList<>();
-                String[] numbers = line.split(",");
-    
-                for (String num : numbers) {
-                    num = num.trim(); // Trim spaces
-                    if (!num.isEmpty()) { // Ensure it's not an empty string
-                        row.add(Integer.parseInt(num));
-                    }
-                }
-    
-                // Only add valid rows
-                if (!row.isEmpty()) { 
-                    grid.add(row);
-                }
+                System.out.println("Invalid input. Please enter a number between 1 and 4.");
+                scanner.nextLine();
             }
         }
 
-        // Add the last Bingo card
-        if (!grid.isEmpty()) { 
-            cards.add(new BingoCard(ID, grid));
+        List<BingoCard> playerCards = new ArrayList<>();
+        Collections.shuffle(cards);
+        for (int i = 0; i < numCards; i++) {
+            playerCards.add(cards.get(i));
         }
-    
-        br.close();
-        return cards;
-    }
-    
-    private static String generateCall(Random rand, Set<String> calledNumbers) {
-        String[] letters = {"B", "I", "N", "G", "O"};
-        int col = rand.nextInt(5);
-        int num = rand.nextInt(15) + 1 + (col * 15);
-        String call = letters[col] + num;
+        
+        System.out.println("Your Bingo Cards:");
+        for (BingoCard card : playerCards) {
+            card.display();
+        }
+        
+        System.out.println("Starting Manual Bingo Game:");
+        Set<String> calledNumbers = new HashSet<>();
 
-        // Ensure the number hasn't been called before
-        while (calledNumbers.contains(call)) { 
-            col = rand.nextInt(5);
-            num = rand.nextInt(15) + 1 + (col * 15);
-            call = letters[col] + num;
+        while (true) {
+            System.out.println("Enter the called Bingo number or type 'Exit' to quit:");
+            String call = scanner.nextLine().toUpperCase().trim();
+            
+            if (call.equals("Exit")) {
+                System.out.println("Game exited.");
+                break;
+            }
+            
+            if (!call.matches("[BINGO][0-9]{1,2}")) {
+                System.out.println("Invalid format. Please enter a valid Bingo call (like B12, I25).");
+                continue;
+            }
+            
+            if (!calledNumbers.add(call)) {
+                System.out.println("Number already called. Try a new number.");
+                continue;
+            }
+
+            int calledNumber = Integer.parseInt(call.substring(1));
+            
+            for (BingoCard card : playerCards) {
+                card.markNumber(calledNumber);
+                card.display();
+                if (card.hasBingo()) {
+                    System.out.println("BINGO on " + card.ID + "! You win!");
+                    scanner.close();
+                    return;
+                }
+            }
         }
-        calledNumbers.add(call);
-        return call;
+        
+        scanner.close();
     }
 }
