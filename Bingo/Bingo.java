@@ -1,9 +1,11 @@
+//Gerishom Muholeza
+
 import java.io.*;
 import java.util.*;
 
 class BingoCard {
-    String ID; // Identifier for the Bingo card
-    List<List<Integer>> grid = new ArrayList<>(); // 2D list representing the Bingo grid
+    String ID; 
+    List<List<Integer>> grid = new ArrayList<>(); 
     
     BingoCard(String ID, List<List<Integer>> grid) {
         this.ID = ID;
@@ -11,7 +13,7 @@ class BingoCard {
     }
     
     void markNumber(int number) {
-        // Replace occurrences of the called number with 0 (marking it as checked)
+        
         for (List<Integer> row : grid) {
             for (int i = 0; i < row.size(); i++) {
                 if (row.get(i) == number) {
@@ -22,12 +24,12 @@ class BingoCard {
     }
     
     boolean hasBingo() {
-        // Check if any row is fully marked (all zeros)
+        
         for (List<Integer> row : grid) {
             if (row.stream().allMatch(n -> n == 0)) return true;
         }
         
-        // Check if any column is fully marked
+        
         for (int i = 0; i < 5; i++) {
             boolean colBingo = true;
             for (List<Integer> row : grid) {
