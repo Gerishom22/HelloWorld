@@ -27,9 +27,8 @@ class BingoCard {
     //Check if the card has a Bingo
     boolean hasBingo() {
         List<Pattern> patterns = Arrays.asList( // List of Bingo patterns
-            new Pattern(Pattern.Type.ROW),
-            new Pattern(Pattern.Type.COLUMN),
-            new Pattern(Pattern.Type.DIAGONAL)
+            new Pattern(Pattern.Type.ROW), new Pattern(Pattern.Type.COLUMN),
+            new Pattern(Pattern.Type.DIAGONAL), new Pattern(Pattern.Type.CUSTOM)
         );
 
         for (Pattern pattern : patterns) { 
